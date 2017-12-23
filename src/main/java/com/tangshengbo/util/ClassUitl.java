@@ -68,9 +68,6 @@ public class ClassUitl {
             Enumeration<URL> urls = getClassLoader().getResources(packageName.replace(".", "/"));
             while (urls.hasMoreElements()) {
                 URL url = urls.nextElement();
-                if (Objects.isNull(url)) {
-                    return classSet;
-                }
                 String protocol = url.getProtocol();
                 if ("file".equals(protocol)) {
                     parseFile(packageName, classSet, url);
