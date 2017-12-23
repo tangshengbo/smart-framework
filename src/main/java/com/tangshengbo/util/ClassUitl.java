@@ -84,9 +84,13 @@ public class ClassUitl {
         return classSet;
     }
 
+    private static boolean filter(File file) {
+        return (file.isFile() && file.getName().endsWith(".class")) || file.isDirectory();
+
+    }
+
     private static void addClass(Set<Class<?>> classSet, String packagePath, String packageName) {
-        File[] files = new File(packagePath).listFiles(file ->
-                (file.isFile() && file.getName().endsWith(".class")) || file.isDirectory());
+        File[] files = new File(packagePath).listFiles(ClassUitl::filter);
         for(File file : files) {
             String fileName = file.getName();
             if (file.isFile()) {
