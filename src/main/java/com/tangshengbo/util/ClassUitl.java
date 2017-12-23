@@ -87,8 +87,7 @@ public class ClassUitl {
     private static void addClass(Set<Class<?>> classSet, String packagePath, String packageName) {
         File[] files = new File(packagePath).listFiles(file ->
                 (file.isFile() && file.getName().endsWith(".class")) || file.isDirectory());
-        List<File> fileList =  Arrays.asList(files);
-        fileList.stream().forEach(file -> {
+        for(File file : files) {
             String fileName = file.getName();
             if (file.isFile()) {
                 String className = fileName.substring(0, fileName.lastIndexOf("."));
@@ -96,7 +95,7 @@ public class ClassUitl {
                     className = packageName + "." + className;
                 }
                 doAddClass(classSet, className);
-                return;
+                continue;
             }
             String subPackagePath = fileName;
             if (StringUtils.isNotEmpty(packagePath)) {
@@ -107,9 +106,7 @@ public class ClassUitl {
                 subPackageName = packagePath + "." + subPackageName;
             }
             addClass(classSet, subPackagePath, subPackageName);
-        });
-
-
+        }
     }
 
     private static void doAddClass(Set<Class<?>> classSet, String className) {
