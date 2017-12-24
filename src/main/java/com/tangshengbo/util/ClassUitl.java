@@ -8,7 +8,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.JarURLConnection;
 import java.net.URL;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -87,7 +90,7 @@ public class ClassUitl {
 
     private static void addClass(Set<Class<?>> classSet, String packagePath, String packageName) {
         File[] files = new File(packagePath).listFiles(ClassUitl::filter);
-        for(File file : files) {
+        for (File file : files) {
             String fileName = file.getName();
             if (file.isFile()) {
                 String className = fileName.substring(0, fileName.lastIndexOf("."));
@@ -95,17 +98,17 @@ public class ClassUitl {
                     className = packageName + "." + className;
                 }
                 doAddClass(classSet, className);
-                continue;
+            } else {
+                String subPackagePath = fileName;
+                if (StringUtils.isNotEmpty(packagePath)) {
+                    subPackagePath = packagePath + "/" + subPackagePath;
+                }
+                String subPackageName = fileName;
+                if (StringUtils.isNotEmpty(packageName)) {
+                    subPackageName = packageName + "." + subPackageName;
+                }
+                addClass(classSet, subPackagePath, subPackageName);
             }
-            String subPackagePath = fileName;
-            if (StringUtils.isNotEmpty(packagePath)) {
-                subPackagePath = packagePath + "/" + subPackagePath;
-            }
-            String subPackageName = fileName;
-            if (StringUtils.isNotEmpty(packageName)) {
-                subPackageName = packagePath + "." + subPackageName;
-            }
-            addClass(classSet, subPackagePath, subPackageName);
         }
     }
 
