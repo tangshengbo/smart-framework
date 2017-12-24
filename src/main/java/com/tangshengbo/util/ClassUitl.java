@@ -83,7 +83,6 @@ public class ClassUitl {
 
     private static boolean filter(File file) {
         return (file.isFile() && file.getName().endsWith(".class")) || file.isDirectory();
-
     }
 
     private static void addClass(Set<Class<?>> classSet, String packagePath, String packageName) {

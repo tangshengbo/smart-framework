@@ -8,7 +8,7 @@ import java.util.Properties;
 /**
  * Created by TangShengBo on 2017/12/23.
  */
-public class ConfigHelper {
+public final class ConfigHelper {
 
     private final static Properties CONFIG_PROPS = PropsUtil.loadProps(ConfigConstant.CONFIG_FILE);
 
