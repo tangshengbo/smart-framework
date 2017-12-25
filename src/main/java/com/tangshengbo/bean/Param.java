@@ -40,4 +40,11 @@ public class Param {
     public Map<String, Object> getParamMap() {
         return paramMap;
     }
+
+    @Override
+    public String toString() {
+        return "Param{" +
+                "paramMap=" + paramMap +
+                '}';
+    }
 }

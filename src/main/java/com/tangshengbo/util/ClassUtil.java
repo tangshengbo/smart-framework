@@ -18,9 +18,9 @@ import java.util.jar.JarFile;
 /**
  * Created by TangShengBo on 2017/12/23.
  */
-public class ClassUitl {
+public class ClassUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(ClassUitl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ClassUtil.class);
 
     /**
      * 获取类加载器
@@ -89,7 +89,7 @@ public class ClassUitl {
     }
 
     private static void addClass(Set<Class<?>> classSet, String packagePath, String packageName) {
-        File[] files = new File(packagePath).listFiles(ClassUitl::filter);
+        File[] files = new File(packagePath).listFiles(ClassUtil::filter);
         for (File file : files) {
             String fileName = file.getName();
             if (file.isFile()) {

@@ -2,7 +2,7 @@ package com.tangshengbo.helper;
 
 import com.tangshengbo.annotation.Controller;
 import com.tangshengbo.annotation.Service;
-import com.tangshengbo.util.ClassUitl;
+import com.tangshengbo.util.ClassUtil;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -17,7 +17,7 @@ public final class ClassHelper {
 
     static {
         String basePackage = ConfigHelper.getAppBasePackage();
-        CLASS_SET = ClassUitl.getClassSet(basePackage);
+        CLASS_SET = ClassUtil.getClassSet(basePackage);
     }
 
     /**
