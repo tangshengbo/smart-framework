@@ -77,15 +77,14 @@ public class DispatchServlet extends HttpServlet {
 
     private void handlerData(HttpServletResponse resp, Data result) throws IOException {
         //返回Data 数据
-        Data data = result;
-        Object model = data.getModel();
+        Object model = result.getModel();
         if (Objects.isNull(model)) {
             return;
         }
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
         PrintWriter writer = resp.getWriter();
-        String json = JsonUtil.toJson(data);
+        String json = JsonUtil.toJson(result);
         writer.write(json);
         writer.flush();
         writer.close();
@@ -93,15 +92,14 @@ public class DispatchServlet extends HttpServlet {
 
     private boolean handlerView(HttpServletRequest req, HttpServletResponse resp, View result) throws IOException, ServletException {
         //返回Jsp 页面
-        View view = result;
-        String path = view.getPath();
+        String path = result.getPath();
         if (Objects.isNull(path)) {
             return true;
         }
         if (path.startsWith("/")) {
             resp.sendRedirect(req.getContextPath() + path);
         }
-        Map<String, Object> model = view.getModel();
+        Map<String, Object> model = result.getModel();
         model.forEach(req::setAttribute);
         req.getRequestDispatcher(ConfigHelper.getAppJspPath() + path).forward(req, resp);
         return false;
