@@ -9,9 +9,9 @@ import java.lang.reflect.Method;
 /**
  * Created by TangShengBo on 2017/12/24.
  */
-public final class ReflectionUitl {
+public final class ReflectionUtil {
 
-    private static final Logger logger = LoggerFactory.getLogger(ReflectionUitl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReflectionUtil.class);
 
     /**
      * 创建实例
@@ -51,7 +51,19 @@ public final class ReflectionUitl {
     }
 
     /**
+     * 调用方法
+     *
+     * @param obj
+     * @param method
+     * @return
+     */
+    public static Object invokeMethod(Object obj, Method method) {
+        return invokeMethod(obj, method, new Object[0]);
+    }
+
+    /**
      * 设置成员变量的值
+     *
      * @param obj
      * @param field
      * @param value
@@ -60,7 +72,7 @@ public final class ReflectionUitl {
         try {
             field.setAccessible(true);
             field.set(obj, value);
-        }catch (ReflectiveOperationException e) {
+        } catch (ReflectiveOperationException e) {
             logger.error("set field failure {}", e);
             throw new RuntimeException(e);
         }

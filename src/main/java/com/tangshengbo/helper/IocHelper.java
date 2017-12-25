@@ -1,7 +1,7 @@
 package com.tangshengbo.helper;
 
 import com.tangshengbo.annotation.Inject;
-import com.tangshengbo.util.ReflectionUitl;
+import com.tangshengbo.util.ReflectionUtil;
 import org.apache.commons.lang3.ArrayUtils;
 
 import java.lang.reflect.Field;
@@ -29,7 +29,7 @@ public final class IocHelper {
                         Class<?> beanFieldClass = field.getType();
                         Object beanFieldInstance = beanMap.get(beanFieldClass);
                         //依赖注入
-                        ReflectionUitl.setField(beanInstance, field, beanFieldInstance);
+                        ReflectionUtil.setField(beanInstance, field, beanFieldInstance);
                     });
         });
     }

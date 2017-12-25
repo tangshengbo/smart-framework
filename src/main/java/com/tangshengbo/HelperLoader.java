@@ -15,7 +15,7 @@ import java.util.List;
 public final class HelperLoader {
 
     public static void init() {
-        Class<?>[] classes = {ClassHelper.class, BeanHelper.class, ControllerHelper.class, IocHelper.class,};
+        Class<?>[] classes = {ClassHelper.class, BeanHelper.class, ControllerHelper.class, IocHelper.class};
         //加载helper类
         List<Class<?>> classList = Arrays.asList(classes);
         classList.forEach(helperClass -> ClassUtil.loadClass(helperClass.getName(), true));

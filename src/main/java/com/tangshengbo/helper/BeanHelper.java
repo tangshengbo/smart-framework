@@ -1,6 +1,6 @@
 package com.tangshengbo.helper;
 
-import com.tangshengbo.util.ReflectionUitl;
+import com.tangshengbo.util.ReflectionUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -17,7 +17,7 @@ public final class BeanHelper {
     static {
         Set<Class<?>> beanClassSet = ClassHelper.getBeanClassSet();
         beanClassSet.forEach(beanClass -> {
-            Object obj = ReflectionUitl.newInstance(beanClass);
+            Object obj = ReflectionUtil.newInstance(beanClass);
             BEAN_MAP.put(beanClass, obj);
         });
     }

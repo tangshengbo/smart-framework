@@ -63,16 +63,35 @@ public class DispatchServlet extends HttpServlet {
         //获取Controller 类和Bean实例
         Class<?> controllerClass = handler.getControllerClass();
         Object controllerBean = BeanHelper.getBean(controllerClass);
-        //穿件参数请求对象
+        //获取参数请求对象
         Param param = getParam(req);
-        Method method = handler.getRequestMethod();
-        Object result = ReflectionUitl.invokeMethod(controllerBean, method, param);
+        //调用方法(controller 方法)
+        Object result = invokeTargetMethod(controllerBean, param, handler);
         if (isView(result)) {
             handlerView(req, resp, (View) result);
         }
         if (isData(result)) {
             handlerData(resp, (Data) result);
         }
+    }
+
+    /**
+     * 调用对应的controller 方法
+     *
+     * @param controllerBean
+     * @param param
+     * @param handler
+     * @return
+     */
+    private Object invokeTargetMethod(Object controllerBean, Param param, Handler handler) {
+        Method method = handler.getRequestMethod();
+        Object result;
+        if (Objects.isNull(param)) {
+            result = ReflectionUtil.invokeMethod(controllerBean, method);
+        } else {
+            result = ReflectionUtil.invokeMethod(controllerBean, method, param);
+        }
+        return result;
     }
 
     private void handlerData(HttpServletResponse resp, Data result) throws IOException {
@@ -90,19 +109,19 @@ public class DispatchServlet extends HttpServlet {
         writer.close();
     }
 
-    private boolean handlerView(HttpServletRequest req, HttpServletResponse resp, View result) throws IOException, ServletException {
+    private void handlerView(HttpServletRequest req, HttpServletResponse resp, View result) throws IOException, ServletException {
         //返回Jsp 页面
         String path = result.getPath();
         if (Objects.isNull(path)) {
-            return true;
+            return;
         }
         if (path.startsWith("/")) {
             resp.sendRedirect(req.getContextPath() + path);
+            return;
         }
         Map<String, Object> model = result.getModel();
         model.forEach(req::setAttribute);
         req.getRequestDispatcher(ConfigHelper.getAppJspPath() + path).forward(req, resp);
-        return false;
     }
 
     private boolean isData(Object result) {
@@ -130,9 +149,6 @@ public class DispatchServlet extends HttpServlet {
             paramMap.put(paramName, paramValue);
         }
         String body = CodecUtil.decodeURL(StreamUtil.getString(req.getInputStream()));
-        if (Objects.isNull(body)) {
-            return null;
-        }
         String[] params = StringUtils.split(body, "&");
         List<String> paramList = Arrays.asList(params);
         paramList.forEach(param -> {
@@ -143,6 +159,9 @@ public class DispatchServlet extends HttpServlet {
                 paramMap.put(paramName, paramValue);
             }
         });
+        if (CollectionUtil.isEmpty(paramMap)) {
+            return null;
+        }
         return new Param(paramMap);
     }
 }
