@@ -31,7 +31,7 @@ public final class AopHelper {
     public static Set<Class<?>> createTargetClassSet(Aspect aspect) {
         Set<Class<?>> targetClassSet = new HashSet<>();
         Class<? extends Annotation> annotation = aspect.value();
-        if (!annotation.equals(aspect.getClass())) {
+        if (!annotation.equals(Aspect.class)) {
             targetClassSet.addAll(ClassHelper.getClassSetByAnnotation(annotation));
         }
         return targetClassSet;
