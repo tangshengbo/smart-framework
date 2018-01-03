@@ -1,9 +1,11 @@
 package com.tangshengbo.helper;
 
 import com.tangshengbo.annotation.Aspect;
+import com.tangshengbo.annotation.Service;
 import com.tangshengbo.proxy.AbstractAspect;
 import com.tangshengbo.proxy.Proxy;
 import com.tangshengbo.proxy.ProxyManager;
+import com.tangshengbo.proxy.TransactionAspect;
 
 import java.lang.annotation.Annotation;
 import java.util.*;
@@ -44,6 +46,16 @@ public final class AopHelper {
      */
     public static Map<Class<?>, Set<Class<?>>> createProxyMap() {
         Map<Class<?>, Set<Class<?>>> proxyMap = new HashMap<>();
+        addAspectProxy(proxyMap);
+        addTransactionProxy(proxyMap);
+        return proxyMap;
+    }
+
+    /**
+     * 添加普通切面
+     * @param proxyMap
+     */
+    private static void addAspectProxy(Map<Class<?>, Set<Class<?>>> proxyMap) {
         Set<Class<?>> proxyClassSet = ClassHelper.getClassSetBySuper(AbstractAspect.class);
         proxyClassSet.stream()
                 .filter(proxyClass -> proxyClass.isAnnotationPresent(Aspect.class))
@@ -52,7 +64,15 @@ public final class AopHelper {
                     Set<Class<?>> targetClassSet = createTargetClassSet(aspect);
                     proxyMap.put(proxyClass, targetClassSet);
                 });
-        return proxyMap;
+    }
+
+    /**
+     * 添加事务切面
+     * @param proxyMap
+     */
+    private static void addTransactionProxy(Map<Class<?>, Set<Class<?>>> proxyMap) {
+        Set<Class<?>> serviceClassSet = ClassHelper.getClassSetByAnnotation(Service.class);
+        proxyMap.put(TransactionAspect.class, serviceClassSet);
     }
 
     /**
