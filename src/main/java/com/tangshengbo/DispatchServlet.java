@@ -58,7 +58,8 @@ public class DispatchServlet extends HttpServlet {
         //获取requestMapping 处理器
         Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
         if (Objects.isNull(handler)) {
-            req.getRequestDispatcher(ConfigHelper.getAppJspPath() + "error.html").forward(req, resp);
+//            req.getRequestDispatcher(ConfigHelper.getAppJspPath() + "error.html").forward(req, resp);
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
         //获取Controller 类和Bean实例
