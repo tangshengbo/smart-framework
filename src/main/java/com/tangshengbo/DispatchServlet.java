@@ -28,7 +28,7 @@ import java.util.*;
 /**
  * Created by TangShengBo on 2017/12/24.
  */
-@WebServlet(urlPatterns = "/*", loadOnStartup = 0)
+@WebServlet(urlPatterns = "/", loadOnStartup = 1)
 public class DispatchServlet extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(DispatchServlet.class);
@@ -54,7 +54,7 @@ public class DispatchServlet extends HttpServlet {
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         //获取请求方法和请求路径
         String requestMethod = req.getMethod().toLowerCase();
-        String requestPath = req.getPathInfo();
+        String requestPath = req.getServletPath();
         //获取requestMapping 处理器
         Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
         if (Objects.isNull(handler)) {
