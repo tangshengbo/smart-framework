@@ -9,7 +9,7 @@ import java.net.URLEncoder;
 /**
  * Created by TangShengBo on 2017/12/24.
  */
-public class CodecUtil {
+public final class CodecUtil {
 
     private final static Logger logger = LoggerFactory.getLogger(CodecUtil.class);
 

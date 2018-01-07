@@ -4,11 +4,8 @@ import com.tangshengbo.bean.Data;
 import com.tangshengbo.bean.Handler;
 import com.tangshengbo.bean.Param;
 import com.tangshengbo.bean.View;
-import com.tangshengbo.helper.BeanHelper;
-import com.tangshengbo.helper.ConfigHelper;
-import com.tangshengbo.helper.ControllerHelper;
+import com.tangshengbo.helper.*;
 import com.tangshengbo.util.*;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +43,8 @@ public class DispatchServlet extends HttpServlet {
         //注册处理静态资源 默认Servlet
         ServletRegistration defaultServlet = servletContext.getServletRegistration("default");
         defaultServlet.addMapping(ConfigHelper.getAppAssetPath() + "*");
+        //初始化文件上传组件
+        UploadHelper.init(servletContext);
         logger.info("初始化完成>>>>>>>>>>>>");
     }
 
@@ -65,15 +64,20 @@ public class DispatchServlet extends HttpServlet {
         //获取Controller 类和Bean实例
         Class<?> controllerClass = handler.getControllerClass();
         Object controllerBean = BeanHelper.getBean(controllerClass);
+        Param param;
         //获取参数请求对象
-        Param param = getParam(req);
+        if (UploadHelper.isMultipart(req)) {
+            param = UploadHelper.createParam(req);
+        } else {
+            param = RequestHelper.createParam(req);
+        }
         //调用方法(controller 方法)
-        Object result = invokeTargetMethod(controllerBean, param, handler);
+        Object result = invokeMethod(controllerBean, param, handler);
         if (isView(result)) {
-            handlerView(req, resp, (View) result);
+            handleView(req, resp, (View) result);
         }
         if (isData(result)) {
-            handlerData(resp, (Data) result);
+            handleData(resp, (Data) result);
         }
     }
 
@@ -85,10 +89,10 @@ public class DispatchServlet extends HttpServlet {
      * @param handler
      * @return
      */
-    private Object invokeTargetMethod(Object controllerBean, Param param, Handler handler) {
+    private Object invokeMethod(Object controllerBean, Param param, Handler handler) {
         Method method = handler.getRequestMethod();
         Object result;
-        if (Objects.isNull(param)) {
+        if (param.isEmpty()) {
             result = ReflectionUtil.invokeMethod(controllerBean, method);
         } else {
             result = ReflectionUtil.invokeMethod(controllerBean, method, param);
@@ -96,7 +100,7 @@ public class DispatchServlet extends HttpServlet {
         return result;
     }
 
-    private void handlerData(HttpServletResponse resp, Data result) throws IOException {
+    private void handleData(HttpServletResponse resp, Data result) throws IOException {
         //返回Data 数据
         Object model = result.getModel();
         if (Objects.isNull(model)) {
@@ -111,7 +115,7 @@ public class DispatchServlet extends HttpServlet {
         writer.close();
     }
 
-    private void handlerView(HttpServletRequest req, HttpServletResponse resp, View result) throws IOException, ServletException {
+    private void handleView(HttpServletRequest req, HttpServletResponse resp, View result) throws IOException, ServletException {
         //返回Jsp 页面
         String path = result.getPath();
         if (Objects.isNull(path)) {
@@ -134,36 +138,4 @@ public class DispatchServlet extends HttpServlet {
         return result instanceof View;
     }
 
-
-    /**
-     * 获取请求参数
-     *
-     * @param req
-     * @return
-     * @throws IOException
-     */
-    private Param getParam(HttpServletRequest req) throws IOException {
-        Map<String, Object> paramMap = new HashMap<>();
-        Enumeration<String> paramNames = req.getParameterNames();
-        while (paramNames.hasMoreElements()) {
-            String paramName = paramNames.nextElement();
-            String paramValue = req.getParameter(paramName);
-            paramMap.put(paramName, paramValue);
-        }
-        String body = CodecUtil.decodeURL(StreamUtil.getString(req.getInputStream()));
-        String[] params = StringUtils.split(body, "&");
-        List<String> paramList = Arrays.asList(params);
-        paramList.forEach(param -> {
-            String[] array = StringUtils.split(param, "=");
-            if (Objects.nonNull(array) && array.length == 2) {
-                String paramName = array[0];
-                String paramValue = array[1];
-                paramMap.put(paramName, paramValue);
-            }
-        });
-        if (CollectionUtil.isEmpty(paramMap)) {
-            return null;
-        }
-        return new Param(paramMap);
-    }
 }

@@ -11,7 +11,7 @@ import java.util.Properties;
 /**
  * Created by TangShengBo on 2017/12/21.
  */
-public class PropsUtil {
+public final class PropsUtil {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(PropsUtil.class);
 
