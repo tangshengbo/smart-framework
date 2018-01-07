@@ -51,33 +51,37 @@ public class DispatchServlet extends HttpServlet {
     @SuppressWarnings("ConstantConditions")
     @Override
     protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        //获取请求方法和请求路径
-        String requestMethod = req.getMethod().toLowerCase();
-        String requestPath = req.getServletPath();
-        //获取requestMapping 处理器
-        Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
-        if (Objects.isNull(handler)) {
-//            req.getRequestDispatcher(ConfigHelper.getAppJspPath() + "error.html").forward(req, resp);
-            resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return;
-        }
-        //获取Controller 类和Bean实例
-        Class<?> controllerClass = handler.getControllerClass();
-        Object controllerBean = BeanHelper.getBean(controllerClass);
-        Param param;
-        //获取参数请求对象
-        if (UploadHelper.isMultipart(req)) {
-            param = UploadHelper.createParam(req);
-        } else {
-            param = RequestHelper.createParam(req);
-        }
-        //调用方法(controller 方法)
-        Object result = invokeMethod(controllerBean, param, handler);
-        if (isView(result)) {
-            handleView(req, resp, (View) result);
-        }
-        if (isData(result)) {
-            handleData(resp, (Data) result);
+        ServletHelper.init(req, resp);
+        try {
+            //获取请求方法和请求路径
+            String requestMethod = req.getMethod().toLowerCase();
+            String requestPath = req.getServletPath();
+            //获取requestMapping 处理器
+            Handler handler = ControllerHelper.getHandler(requestMethod, requestPath);
+            if (Objects.isNull(handler)) {
+                resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+            //获取Controller 类和Bean实例
+            Class<?> controllerClass = handler.getControllerClass();
+            Object controllerBean = BeanHelper.getBean(controllerClass);
+            Param param;
+            //获取参数请求对象
+            if (UploadHelper.isMultipart(req)) {
+                param = UploadHelper.createParam(req);
+            } else {
+                param = RequestHelper.createParam(req);
+            }
+            //调用方法(controller 方法)
+            Object result = invokeMethod(controllerBean, param, handler);
+            if (isView(result)) {
+                handleView(req, resp, (View) result);
+            }
+            if (isData(result)) {
+                handleData(resp, (Data) result);
+            }
+        } finally {
+            ServletHelper.destroy();
         }
     }
 
