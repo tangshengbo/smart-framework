@@ -25,7 +25,7 @@ import java.util.Objects;
 /**
  * Created by TangShengBo on 2018/1/7.
  */
-public class UploadHelper {
+public final class UploadHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(UploadHelper.class);
 
